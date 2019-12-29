@@ -26,7 +26,7 @@ func New(size int, dir string) Cache {
 	out := &cacher{
 		cache2: diskcache.New(dir),
 	}
-	c, err := lru.NewWithEvict(size, out.onEvicted)
+	c, err := lru.New(size)
 	if err != nil {
 		panic(err)
 	}
@@ -34,9 +34,6 @@ func New(size int, dir string) Cache {
 	return out
 }
 
-func (c *cacher) onEvicted(key interface{}, value interface{}) {
-	go c.cache2.Delete(key.(string))
-}
 
 func (c *cacher) Add(key, value string) {
 	c.cache.Add(key, value)
