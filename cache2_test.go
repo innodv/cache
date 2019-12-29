@@ -12,13 +12,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-
 func TestCache2(t *testing.T) {
 	testVal := map[string]string{
-		"foo":"bar",
+		"foo": "bar",
 	}
 	c := New2(200, "/tmp/foobar")
-	c.Add("hello",testVal)
+	c.Add("hello", testVal)
 	var val map[string]string
 	ok, err := c.Get("hello", &val)
 	assert.Equal(t, testVal, val)

@@ -34,7 +34,6 @@ func New(size int, dir string) Cache {
 	return out
 }
 
-
 func (c *cacher) Add(key, value string) {
 	c.cache.Add(key, value)
 	c.cache2.Set(key, []byte(value))

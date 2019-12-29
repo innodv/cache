@@ -8,14 +8,14 @@ package cache
 
 import (
 	"encoding/json"
-	
+
 	"github.com/gregjones/httpcache/diskcache"
 	lru "github.com/hashicorp/golang-lru"
 )
 
 type Cache2 interface {
 	Add(key string, value interface{}) error
-	Get(key string, out interface{})  (ok bool, err error)
+	Get(key string, out interface{}) (ok bool, err error)
 	Remove(key string)
 }
 
@@ -36,7 +36,6 @@ func New2(size int, dir string) Cache2 {
 	return out
 }
 
-
 func (c *cacher2) Add(key string, value interface{}) error {
 	data, err := json.Marshal(value)
 	if err != nil {
@@ -47,7 +46,7 @@ func (c *cacher2) Add(key string, value interface{}) error {
 	return err
 }
 
-func (c *cacher2) Get(key string, out interface{})  (ok bool, err error) {
+func (c *cacher2) Get(key string, out interface{}) (ok bool, err error) {
 	val, ok := c.cache.Get(key)
 	if ok {
 		err = json.Unmarshal(val.([]byte), out)
