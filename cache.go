@@ -7,51 +7,51 @@
 package cache
 
 import (
-	"github.com/gregjones/httpcache/diskcache"
-	lru "github.com/hashicorp/golang-lru"
+	"encoding/json"
+	golru "github.com/hashicorp/golang-lru"
 )
 
 type Cache interface {
-	Add(key, value string)
-	Get(key string) (value string, ok bool)
-	Remove(key string)
+	Add(key string, value interface{}) error
+	Get(key string, out interface{}) (ok bool, err error)
+	Remove(key string) error
 }
 
-type cacher struct {
-	cache  *lru.Cache
-	cache2 *diskcache.Cache
+type lru struct {
+	cache *golru.Cache
 }
 
-func New(size int, dir string) Cache {
-	out := &cacher{
-		cache2: diskcache.New(dir),
-	}
-	c, err := lru.New(size)
+func NewLRU(size int) Cache {
+	c, err := golru.New(size)
 	if err != nil {
 		panic(err)
 	}
-	out.cache = c
-	return out
-}
-
-func (c *cacher) Add(key, value string) {
-	c.cache.Add(key, value)
-	c.cache2.Set(key, []byte(value))
-}
-
-func (c *cacher) Get(key string) (value string, ok bool) {
-	out, ok := c.cache.Get(key)
-	if ok {
-		return out.(string), ok
+	return &cacher{
+		cache: c,
 	}
-	res, ok := c.cache2.Get(key)
-	if ok {
-		return string(res), ok
-	}
-	return "", false
 }
 
-func (c *cacher) Remove(key string) {
+func (c *lru) Add(key string, value interface{}) error {
+	data, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+	c.cache.Add(key, data)
+	return err
+}
+
+func (c *lru) Get(key string, out interface{}) (ok bool, err error) {
+	val, ok := c.cache.Get(key)
+	if ok {
+		err = json.Unmarshal(val.([]byte), out)
+		if err != nil {
+			return false, err
+		}
+		return
+	}
+	return false, nil
+}
+
+func (c *lru) Remove(key string) {
 	c.cache.Remove(key)
-	c.cache2.Delete(key)
 }

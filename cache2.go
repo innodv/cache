@@ -13,12 +13,6 @@ import (
 	lru "github.com/hashicorp/golang-lru"
 )
 
-type Cache2 interface {
-	Add(key string, value interface{}) error
-	Get(key string, out interface{}) (ok bool, err error)
-	Remove(key string)
-}
-
 type cacher2 struct {
 	cache  *lru.Cache
 	cache2 *diskcache.Cache
