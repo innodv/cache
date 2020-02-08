@@ -12,13 +12,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCache(t *testing.T) {
-	c := New(200, "/tmp/foobar")
-	c.Add("hello", "world")
-	val, ok := c.Get("hello")
-	assert.Equal(t, "world", val)
+func TestDiskCache(t *testing.T) {
+	testVal := map[string]string{
+		"foo": "bar",
+	}
+	c := NewDisk("/tmp/foobar")
+	c.Add("hello", testVal)
+	var val map[string]string
+	ok, err := c.Get("hello", &val)
+	assert.Equal(t, testVal, val)
 	assert.True(t, ok)
+	assert.NoError(t, err)
 	c.Remove("hello")
-	_, ok = c.Get("hello")
+	ok, _ = c.Get("hello", &val)
 	assert.False(t, ok)
 }

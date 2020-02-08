@@ -12,13 +12,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCacheRedis(t *testing.T) {
+func TestRedis(t *testing.T) {
 	testVal := map[string]string{
 		"foo": "bar",
 	}
-	c := NewRedis(1, RedisConfig{
-		Addr:     "127.0.0.1:6379",
-		Network:  "tcp",
+	c := NewRedis(RedisConfig{
+		Servers: map[string]string{
+			"local": "127.0.0.1:6379",
+		},
 		Password: "password",
 		Database: 1,
 	})

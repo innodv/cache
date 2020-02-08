@@ -12,11 +12,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCache2(t *testing.T) {
+func TestCache(t *testing.T) {
+	c := NewLRU(200)
 	testVal := map[string]string{
 		"foo": "bar",
 	}
-	c := New2(200, "/tmp/foobar")
 	c.Add("hello", testVal)
 	var val map[string]string
 	ok, err := c.Get("hello", &val)

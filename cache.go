@@ -6,52 +6,8 @@
 
 package cache
 
-import (
-	"encoding/json"
-	golru "github.com/hashicorp/golang-lru"
-)
-
 type Cache interface {
 	Add(key string, value interface{}) error
 	Get(key string, out interface{}) (ok bool, err error)
 	Remove(key string) error
-}
-
-type lru struct {
-	cache *golru.Cache
-}
-
-func NewLRU(size int) Cache {
-	c, err := golru.New(size)
-	if err != nil {
-		panic(err)
-	}
-	return &cacher{
-		cache: c,
-	}
-}
-
-func (c *lru) Add(key string, value interface{}) error {
-	data, err := json.Marshal(value)
-	if err != nil {
-		return err
-	}
-	c.cache.Add(key, data)
-	return err
-}
-
-func (c *lru) Get(key string, out interface{}) (ok bool, err error) {
-	val, ok := c.cache.Get(key)
-	if ok {
-		err = json.Unmarshal(val.([]byte), out)
-		if err != nil {
-			return false, err
-		}
-		return
-	}
-	return false, nil
-}
-
-func (c *lru) Remove(key string) {
-	c.cache.Remove(key)
 }
